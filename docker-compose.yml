@@ -1,0 +1,168 @@
+###########################################
+# Notebook - Iceberg - MinIO - Nessie - Dremio - Airflow Setup
+###########################################
+
+version: "3"
+
+services:
+  # Spark Notebook Server
+  notebook:
+    image: alexmerced/spark33-notebook
+    container_name: notebook
+    networks:
+      - iceberg
+    volumes:
+      - ./warehouse:/home/docker/warehouse
+      - ./notebooks:/home/docker/notebooks
+      - ./datasets:/home/docker/datasets
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+    ports:
+      - 8888:8888
+      - 8080:8080
+      - 10000:10000
+      - 10001:10001
+      - 2222:22
+      - 8000:8000
+
+  # Nessie Catalog Server Using In-Memory Store
+  nessie:
+    image: projectnessie/nessie:0.67.0
+    container_name: nessie
+    networks:
+      - iceberg
+    ports:
+      - 19120:19120
+
+  # Minio Storage Server
+  minio:
+    image: minio/minio:RELEASE.2023-07-21T21-12-44Z
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DOMAIN=storage
+      - MINIO_REGION_NAME=us-east-1
+      - MINIO_REGION=us-east-1
+    networks:
+      - iceberg
+    ports:
+      - 9001:9001
+      - 9000:9000
+    command: ["server", "/data", "--console-address", ":9001"]
+
+  # Dremio
+  dremio:
+    platform: linux/x86_64
+    image: dremio/dremio-oss:latest
+    container_name: dremio
+    ports:
+      - 9047:9047
+      - 31010:31010
+      - 32010:32010
+    networks:
+      - iceberg
+###########################################
+  # Postgres (Airflow metadata DB)
+  ###########################################
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    networks:
+      - iceberg
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  ###########################################
+  # Airflow - DB Init Step (runs once)
+  ###########################################
+  airflow-init:
+    image: apache/airflow:2.5.1
+    container_name: airflow-init
+    depends_on:
+      - postgres
+    networks:
+      - iceberg
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: db init
+
+  ###########################################
+  # Airflow Scheduler
+  ###########################################
+  airflow-scheduler:
+    image: apache/airflow:2.5.1
+    container_name: airflow-scheduler
+    restart: always
+    depends_on:
+      - postgres
+      - airflow-init
+    networks:
+      - iceberg
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --local || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ###########################################
+  # Airflow Webserver
+  ###########################################
+  airflow-webserver:
+    image: apache/airflow:2.5.1
+    container_name: airflow-webserver
+    restart: always
+    depends_on:
+      - postgres
+      - airflow-init
+      - airflow-scheduler
+    networks:
+      - iceberg
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  iceberg:
+
+volumes:
+  postgres-db-volume:
