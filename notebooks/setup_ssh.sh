@@ -53,11 +53,11 @@ echo "RUNNING FASTAPI SERVER"
 chmod -R 777 /home/docker/notebooks/
 pip install -r /home/docker/notebooks/requirements.txt || { echo "Failed to install requirements"; exit 1; }
 
-cd /home/docker/notebooks/fastapi/ || { echo "Directory not found"; exit 1; }
+# cd /home/docker/notebooks/fastapi/ || { echo "Directory not found"; exit 1; }
 
-python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+# python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-echo "FastAPI server is running at http://localhost:8000"
+# echo "FastAPI server is running at http://localhost:8000"
 
 
 EOF

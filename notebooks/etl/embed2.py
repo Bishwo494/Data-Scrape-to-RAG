@@ -59,6 +59,8 @@ spark = SparkSession.builder.config(conf=conf).getOrCreate()
 print("✅ Spark Session Started")
 
 
+output_dir = "/home/docker/notebooks/data"
+os.makedirs(output_dir, exist_ok=True)
 
 # 1. Load your CSV
 df_back = spark.read \
@@ -81,9 +83,12 @@ index = faiss.IndexFlatL2(dimension)
 index.add(embeddings.astype(np.float32))
 
 # 6. Save FAISS index to disk
-faiss.write_index(index, 'faiss_index.bin')
+# faiss.write_index(index, 'faiss_index.bin')
+faiss_index_path = os.path.join(output_dir, 'faiss_index.bin')
+faiss.write_index(index, faiss_index_path)
 
 # 7. Save DataFrame (metadata) to CSV for future use
-df_back.toPandas().to_csv('metadata_random_ebooks_metadata.csv', index=False)
+metadata_csv_path = os.path.join(output_dir, 'metadata_random_ebooks_metadata.csv')
+df_back.toPandas().to_csv(metadata_csv_path, index=False)
 
 print("Index and metadata saved.")
