@@ -12,9 +12,9 @@ default_args = {
 }
 
 with DAG(
-    dag_id='dummy_dag_example',
+    dag_id='main_dag',
     default_args=default_args,
-    schedule_interval='@daily',
+    schedule_interval=None,
     catchup=False,
     description='A simple dummy DAG',
 ) as dag:

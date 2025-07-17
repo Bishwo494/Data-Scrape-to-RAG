@@ -12,9 +12,7 @@ services:
     networks:
       - iceberg
     volumes:
-      - ./warehouse:/home/docker/warehouse
       - ./notebooks:/home/docker/notebooks
-      - ./datasets:/home/docker/datasets
     environment:
       - AWS_ACCESS_KEY_ID=admin
       - AWS_SECRET_ACCESS_KEY=password
@@ -54,18 +52,7 @@ services:
       - 9000:9000
     command: ["server", "/data", "--console-address", ":9001"]
 
-  # Dremio
-  dremio:
-    platform: linux/x86_64
-    image: dremio/dremio-oss:latest
-    container_name: dremio
-    ports:
-      - 9047:9047
-      - 31010:31010
-      - 32010:32010
-    networks:
-      - iceberg
-###########################################
+  ###########################################
   # Postgres (Airflow metadata DB)
   ###########################################
   postgres:
