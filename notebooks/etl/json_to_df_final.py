@@ -1,51 +1,6 @@
 import pandas as pd
 import json
 
-# def json_list_to_dataframe():
-    
-#     """
-#     Convert random_ebooks_metadata.json to a DataFrame.
-#     Renames top-level 'title' to 'full_title' to avoid conflict with 'Title' in metadata.
-    
-#     Args:
-#         file_path (str): Path to the JSON file.
-        
-#     Returns:
-#         pandas.DataFrame: Flattened DataFrame with metadata from all books.
-#     """
-#     file_path = "random_ebooks_metadata.json"
-#     output_csv = "random_ebooks_metadata.csv"
-#     try:
-#         # Step 1: Load JSON
-#         with open(file_path, 'r', encoding='utf-8') as f:
-#             data = json.load(f)
-
-#         records = []
-#         for book in data:
-#             # Rename top-level 'title' to 'full_title'
-#             record = {
-#                 "full_title": book.get("title", "Unknown"),
-#                 "url": book.get("url", "Unknown")
-#             }
-
-#             # Add 'about_ebook' metadata
-#             about = book.get("about_ebook", {})
-#             for k, v in about.items():
-#                 record[k] = v  # e.g., Title, Author, Language
-
-#             records.append(record)
-
-#         # Step 2: Convert to DataFrame
-#         df = pd.DataFrame(records)
-#         df.to_csv(output_csv, index=False, encoding='utf-8')
-
-#     except FileNotFoundError:
-#         print(f"❌ File not found: {file_path}")
-#     except json.JSONDecodeError:
-#         print(f"❌ Invalid JSON format in file: {file_path}")
-#     except Exception as e:
-#         print(f"❌ Unexpected error: {str(e)}")
-
 def json_list_to_dataframe():
     #working code
     from pyspark.sql import SparkSession
@@ -130,7 +85,7 @@ def json_list_to_dataframe():
         F.col("about_ebook.Author").alias("author"),
         F.col("about_ebook.Title").alias("book_title"),
         F.col("about_ebook.Category").alias("Category"),
-        # Include all other fields similarly
+        F.col("about_ebook.Subject").alias("Subject"),
         F.col("download_links.`text/html`").alias("html_url"),
         F.coalesce(
             F.col("download_links.`text/plain; charset=us-ascii`"),

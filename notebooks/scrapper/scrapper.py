@@ -84,7 +84,7 @@ def scrape_books():
             return None
 
     # Step 1: Get all book links from 50 pages
-    book_urls = get_all_book_links(pages_to_scan=2)
+    book_urls = get_all_book_links(pages_to_scan=20)
 
     # Step 2: Scrape metadata concurrently
     ebooks_metadata = []

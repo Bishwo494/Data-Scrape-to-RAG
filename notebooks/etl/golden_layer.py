@@ -72,7 +72,7 @@ def golden_layer():
         concat_ws(" ", 
                 col("Title"), 
                 col("Author"), 
-                col("Category"))
+                col("Subject"))
     )
 
     df2.write \
