@@ -1,24 +1,20 @@
 import pandas as pd
 import json
+from pyspark.sql import SparkSession
+import pyspark
+import json
+from pyspark.sql import Row
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, concat_ws
+from pyspark.sql.types import StringType
+
+import os
+import sys
+central_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(central_home)
+from notebooks.utils.variables import *
 
 def golden_layer():
-    #working code
-    from pyspark.sql import SparkSession
-    import pyspark
-    import json
-    from pyspark.sql import Row
-    from pyspark.sql import SparkSession
-    from pyspark.sql.functions import col, concat_ws
-    from pyspark.sql.types import StringType
-
-    # === Step 1: Define Sensitive Variables ===
-    NESSIE_URI = "http://nessie:19120/api/v1"
-    MINIO_ENDPOINT = "http://minio:9000"
-    MINIO_ACCESS_KEY = "admin"
-    MINIO_SECRET_KEY = "password"
-    JSON_OBJECT_URI = "s3a://ebooks/random_ebooks_metadata.json"
-
-    # === Step 2: Spark Configuration ===
     conf = (
     pyspark.SparkConf()
     .setAppName("ReadJSONFromMinIO")
@@ -54,11 +50,9 @@ def golden_layer():
     .set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
     )
 
-    # === Step 3: Start Spark Session ===
     spark = SparkSession.builder.config(conf=conf).getOrCreate()
     print("✅ Spark Session Started")
 
-    #Working code
 
     from pyspark.sql import functions as F
     import json

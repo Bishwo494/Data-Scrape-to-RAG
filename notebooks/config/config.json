@@ -1,0 +1,9 @@
+{
+  "BASE_URL" : "",
+  "pages_to_scn": 3,
+  "NESSIE_URI" : "",
+  "MINIO_ENDPOINT" : "",
+  "MINIO_ACCESS_KEY" : "",
+  "MINIO_SECRET_KEY" : "",
+  "local_vloume": "/home/docker/notebooks/data"
+}

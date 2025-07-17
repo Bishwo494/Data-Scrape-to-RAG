@@ -1,21 +1,19 @@
 import pandas as pd
 import json
+import os
+import sys
+from pyspark.sql import SparkSession
+import pyspark
+import json
+from pyspark.sql import Row
+
+central_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(central_home)
+
+print(central_home)
+from notebooks.utils.variables import *
 
 def json_list_to_dataframe():
-    #working code
-    from pyspark.sql import SparkSession
-    import pyspark
-    import json
-    from pyspark.sql import Row
-
-    # === Step 1: Define Sensitive Variables ===
-    NESSIE_URI = "http://nessie:19120/api/v1"
-    MINIO_ENDPOINT = "http://minio:9000"
-    MINIO_ACCESS_KEY = "admin"
-    MINIO_SECRET_KEY = "password"
-    JSON_OBJECT_URI = "s3a://ebooks/random_ebooks_metadata.json"
-
-    # === Step 2: Spark Configuration ===
     conf = (
     pyspark.SparkConf()
     .setAppName("ReadJSONFromMinIO")

@@ -11,11 +11,12 @@ import pyspark
 import json
 from pyspark.sql import Row
 
-# === Step 1: Define Sensitive Variables ===
-NESSIE_URI = "http://nessie:19120/api/v1"
-MINIO_ENDPOINT = "http://minio:9000"
-MINIO_ACCESS_KEY = "admin"
-MINIO_SECRET_KEY = "password"
+import os
+import sys
+central_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(central_home)
+from notebooks.utils.variables import *
+
 JSON_OBJECT_URI = "s3a://ebooks/random_ebooks_metadata.json"
 
 # === Step 2: Spark Configuration ===
@@ -59,7 +60,7 @@ spark = SparkSession.builder.config(conf=conf).getOrCreate()
 print("✅ Spark Session Started")
 
 
-output_dir = "/home/docker/notebooks/data"
+output_dir = local_vloume
 os.makedirs(output_dir, exist_ok=True)
 
 # 1. Load your CSV

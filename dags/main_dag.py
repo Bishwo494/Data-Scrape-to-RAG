@@ -7,7 +7,7 @@ from airflow.providers.ssh.operators.ssh import SSHOperator
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2025, 7, 1),
-    'retries': 1,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
 }
 

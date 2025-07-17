@@ -7,10 +7,16 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import boto3
 from io import BytesIO
 from botocore.exceptions import ClientError
+import os
+import sys
 
+central_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(central_home)
 
-INDEX_URL = "https://www.gutenberg.org/ebooks/search/?sort_order=downloads"
-BASE_URL = "https://www.gutenberg.org"
+print(central_home)
+from notebooks.utils.variables import *
+
+INDEX_URL = BASE_URL+"/ebooks/search/?sort_order=downloads"
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -84,7 +90,7 @@ def scrape_books():
             return None
 
     # Step 1: Get all book links from 50 pages
-    book_urls = get_all_book_links(pages_to_scan=20)
+    book_urls = get_all_book_links(pages_to_scn)
 
     # Step 2: Scrape metadata concurrently
     ebooks_metadata = []
