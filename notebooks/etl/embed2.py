@@ -63,7 +63,6 @@ os.makedirs(output_dir, exist_ok=True)
 
 read_location = "s3a://"+minio_bucket+"/gold/rp_books/"
 
-# 1. Load your CSV
 df_back = spark.read \
     .option("header", True) \
     .csv(read_location)
