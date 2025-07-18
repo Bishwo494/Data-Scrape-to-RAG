@@ -56,10 +56,13 @@ def golden_layer():
 
     from pyspark.sql import functions as F
     import json
+    read_location = "s3a://"+minio_bucket+"/silver/sw_books/"
+    write_location = "s3a://"+minio_bucket+"/gold/rp_books/"
+
     # Read as text
     df_back = spark.read \
         .option("header", True) \
-        .csv("s3a://warehouse/golden_data/")
+        .csv(read_location)
    
     df2 = df_back.withColumn(
     "search_text",
@@ -72,6 +75,6 @@ def golden_layer():
     df2.write \
     .option("header", True) \
     .mode("overwrite") \
-    .csv("s3a://warehouse/final_golden_data/")
+    .csv(write_location)
 
 golden_layer()

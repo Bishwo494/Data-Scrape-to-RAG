@@ -17,8 +17,6 @@ central_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 sys.path.append(central_home)
 from notebooks.utils.variables import *
 
-JSON_OBJECT_URI = "s3a://ebooks/random_ebooks_metadata.json"
-
 # === Step 2: Spark Configuration ===
 conf = (
     pyspark.SparkConf()
@@ -57,16 +55,18 @@ conf = (
 
 # === Step 3: Start Spark Session ===
 spark = SparkSession.builder.config(conf=conf).getOrCreate()
-print("✅ Spark Session Started")
+print("Spark Session Started")
 
 
 output_dir = local_vloume
 os.makedirs(output_dir, exist_ok=True)
 
+read_location = "s3a://"+minio_bucket+"/gold/rp_books/"
+
 # 1. Load your CSV
 df_back = spark.read \
     .option("header", True) \
-    .csv("s3a://warehouse/final_golden_data/")
+    .csv(read_location)
 
 
 # 3. Collect data to driver (FAISS runs on driver)

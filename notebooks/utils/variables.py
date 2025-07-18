@@ -16,6 +16,7 @@ def initialize_json_config():
     global MINIO_ACCESS_KEY
     global MINIO_SECRET_KEY
     global local_vloume
+    global minio_bucket
 
     #config file 
     global CONFIG_FILE
@@ -32,5 +33,6 @@ def initialize_json_config():
     MINIO_ACCESS_KEY = js_conf['MINIO_ACCESS_KEY']
     MINIO_SECRET_KEY = js_conf['MINIO_SECRET_KEY']
     local_vloume = js_conf['local_vloume']
+    minio_bucket = js_conf['minio_bucket']
 
 initialize_json_config()

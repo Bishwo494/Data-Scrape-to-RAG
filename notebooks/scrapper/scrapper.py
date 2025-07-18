@@ -110,11 +110,12 @@ def scrape_books():
     # print(f"Saved to {output_file}")
 
 
-    minio_endpoint = "http://minio:9000"  # or your MinIO host
-    access_key = "admin"
-    secret_key = "password"
-    bucket_name = "ebooks"
-    object_key = "random_ebooks_metadata.json"
+    minio_endpoint = MINIO_ENDPOINT
+    access_key = MINIO_ACCESS_KEY
+    secret_key = MINIO_SECRET_KEY
+
+    bucket_name = minio_bucket
+    object_key = "raw/random_ebooks_metadata.json"
 
     s3_client = boto3.client(
     's3',

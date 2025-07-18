@@ -30,24 +30,24 @@ with DAG(
         do_xcom_push=False
     )
 
-    json_to_df = SSHOperator(
-        task_id='json_to_df',
+    silver = SSHOperator(
+        task_id='silver',
         ssh_conn_id='ssh_notebook',  # Must match Airflow UI Connection ID
         command='python3 /home/docker/notebooks/etl/json_to_df_final.py',
         cmd_timeout=300000,
         do_xcom_push=False
     )
 
-    golden_layer = SSHOperator(
-        task_id='golden_layer',
+    gold = SSHOperator(
+        task_id='gold',
         ssh_conn_id='ssh_notebook',  # Must match Airflow UI Connection ID
         command='python3 /home/docker/notebooks/etl/golden_layer.py',
         cmd_timeout=300000,
         do_xcom_push=False
     )
 
-    embed2 = SSHOperator(
-        task_id='embed2',
+    embed = SSHOperator(
+        task_id='embed',
         ssh_conn_id='ssh_notebook',  # Must match Airflow UI Connection ID
         command='python3 /home/docker/notebooks/etl/embed2.py',
         cmd_timeout=300000,
@@ -57,4 +57,4 @@ with DAG(
 
     end = DummyOperator(task_id='end')
 
-    start >> scrape >> json_to_df >> golden_layer >> embed2 >> end
+    start >> scrape >> silver >> gold >> embed >> end

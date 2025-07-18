@@ -91,9 +91,11 @@ def json_list_to_dataframe():
         ).alias("text_url")
     )
 
+    location = "s3a://"+minio_bucket+"/silver/sw_books/"
+
     final_df.write \
     .option("header", True) \
     .mode("overwrite") \
-    .csv("s3a://warehouse/golden_data/")
+    .csv(location)
 
 json_list_to_dataframe()
